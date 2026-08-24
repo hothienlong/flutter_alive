@@ -1,0 +1,11 @@
+# https://dart.dev/guides/libraries/private-files
+# Created by `dart pub`
+.dart_tool/
+build/
+coverage/
+coverage2/
+dist/
+node_modules/
+packages/**/out/
+*.vsix
+.DS_Store

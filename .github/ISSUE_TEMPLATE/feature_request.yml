@@ -1,0 +1,28 @@
+name: Feature request
+description: Propose an improvement to Flutter Alive.
+title: "[feature]: "
+labels: [enhancement, needs-triage]
+body:
+  - type: textarea
+    attributes:
+      label: Developer problem
+      description: What workflow is difficult today?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed behavior
+      description: Describe the observable CLI or IDE behavior.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Component
+      options:
+        - Supervisor
+        - Android
+        - iOS
+        - CLI/config
+        - Machine protocol
+        - VS Code/Cursor DAP
+        - Documentation

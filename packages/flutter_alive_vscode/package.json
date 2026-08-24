@@ -1,0 +1,149 @@
+{
+  "name": "flutter-alive",
+  "displayName": "Flutter Alive",
+  "description": "Persistent Flutter debugging across physical-device disconnects.",
+  "version": "0.1.0",
+  "publisher": "hothienlong",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hothienlong/flutter_alive.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Debuggers",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "flutter",
+    "dart",
+    "debugger",
+    "reconnect"
+  ],
+  "activationEvents": [
+    "onDebug",
+    "onCommand:flutterAlive.migrateLaunchConfiguration"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "flutterAlive.migrateLaunchConfiguration",
+        "title": "Flutter Alive: Migrate Dart Launch Configuration"
+      }
+    ],
+    "configuration": {
+      "title": "Flutter Alive",
+      "properties": {
+        "flutterAlive.executable": {
+          "type": "string",
+          "default": "flutter_alive",
+          "description": "Path to the flutter_alive executable used by the debug adapter."
+        },
+        "flutterAlive.flutterPath": {
+          "type": "string",
+          "default": "",
+          "description": "Optional Flutter binary or SDK path passed to flutter_alive."
+        },
+        "flutterAlive.attachTimeout": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "description": "Seconds allowed for attach-first recovery."
+        },
+        "flutterAlive.attachEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Try attaching to the existing app before relaunching."
+        }
+      }
+    },
+    "debuggers": [
+      {
+        "type": "flutter_alive",
+        "label": "Flutter Alive",
+        "languages": [
+          "dart"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program",
+              "deviceId"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Flutter entrypoint, usually lib/main.dart."
+              },
+              "deviceId": {
+                "type": "string",
+                "description": "Physical Flutter device ID or unique prefix."
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Flutter project working directory."
+              },
+              "toolArgs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Arguments passed to flutter run or attach."
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Arguments passed to the Flutter application."
+              },
+              "env": {
+                "type": "object",
+                "description": "Environment variables for the Flutter process."
+              },
+              "flutterMode": {
+                "type": "string",
+                "enum": [
+                  "debug",
+                  "profile",
+                  "release"
+                ],
+                "default": "debug"
+              },
+              "appId": {
+                "type": "string",
+                "description": "Optional Android package or iOS bundle ID used for attach."
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "flutter_alive",
+            "request": "launch",
+            "name": "Flutter Alive",
+            "program": "lib/main.dart",
+            "deviceId": "YOUR_DEVICE_ID",
+            "toolArgs": [],
+            "args": [],
+            "env": {}
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "check": "tsc -p ./ --noEmit",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.7.2"
+  }
+}

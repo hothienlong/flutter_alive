@@ -1,0 +1,27 @@
+name: Bug report
+description: Report a reproducible Flutter Alive failure.
+title: "[bug]: "
+labels: [bug, needs-triage]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Describe the expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduction
+      description: Include exact commands and reconnect steps.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Environment
+      description: Include host OS, Flutter/Dart versions, device OS, and connection type.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Sanitized logs
+      description: Attach --alive-json output without secrets or private identifiers.

@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            dart: stable
+          - os: macos-latest
+            dart: stable
+          - os: windows-latest
+            dart: stable
+          - os: ubuntu-latest
+            dart: 3.4.4
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.dart }}
+      - run: dart pub get
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: dart analyze --fatal-infos
+      - run: dart test
+      - run: dart pub publish --dry-run
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - run: dart test --coverage=coverage
+      - run: dart run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib
+      - name: Enforce alpha coverage floor
+        shell: bash
+        run: |
+          coverage=$(awk -F: '/^LF:/{lines+=$2} /^LH:/{hit+=$2} END {print (hit/lines)*100}' coverage/lcov.info)
+          echo "Line coverage: ${coverage}%"
+          awk -v value="$coverage" 'BEGIN {exit(value < 75)}'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/lcov.info
+
+  vscode-extension:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/flutter_alive_vscode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: packages/flutter_alive_vscode/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm run compile
