@@ -197,7 +197,6 @@ void main() {
 
   test('stops automatic runner retries at the configured limit', () async {
     final fixture = await _SupervisorFixture.create(
-      runCrashes: 3,
       config: const AliveConfig(
         device: 'USB-DEVICE',
         reconnectDebounce: Duration(milliseconds: 10),
@@ -207,7 +206,18 @@ void main() {
     );
     addTearDown(fixture.dispose);
 
+    await fixture.harness.waitForSessionCount(1);
+    await _waitForState(fixture.supervisor, SupervisorState.running);
+    await fixture.harness.sessions[0].exit(1);
+
+    await fixture.harness.waitForSessionCount(2);
+    await _waitForState(fixture.supervisor, SupervisorState.running);
+    await fixture.harness.sessions[1].exit(1);
+
     await fixture.harness.waitForSessionCount(3);
+    await _waitForState(fixture.supervisor, SupervisorState.running);
+    await fixture.harness.sessions[2].exit(1);
+
     await _waitForState(fixture.supervisor, SupervisorState.error);
     await Future<void>.delayed(const Duration(milliseconds: 50));
 
