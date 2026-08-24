@@ -275,6 +275,7 @@ final class _SupervisorFixture {
     required this.changeTracker,
     required this.supervisor,
     required this.runFuture,
+    required this.logFile,
     required this.logSink,
   });
 
@@ -308,9 +309,10 @@ dependencies:
       ..attachFailuresRemaining = attachFailures
       ..attachHangsRemaining = attachHangs
       ..runCrashesRemaining = runCrashes;
+    final logFile = File('${project.path}.log');
     // Closed by the fixture's async teardown.
     // ignore: close_sinks
-    final logSink = File('${project.path}/flutter_alive.log').openWrite();
+    final logSink = logFile.openWrite();
     final changeTracker = ProjectChangeTracker(project.path);
     final supervisor = FlutterAliveSupervisor(
       flutter: const ExecutableCommand('flutter'),
@@ -339,6 +341,7 @@ dependencies:
       changeTracker: changeTracker,
       supervisor: supervisor,
       runFuture: supervisor.run(),
+      logFile: logFile,
       logSink: logSink,
     );
     unawaited(fixture.runFuture.then((_) => fixture.completed = true));
@@ -350,6 +353,7 @@ dependencies:
   final ProjectChangeTracker changeTracker;
   final FlutterAliveSupervisor supervisor;
   final Future<int> runFuture;
+  final File logFile;
   final IOSink logSink;
   bool completed = false;
   bool _disposed = false;
@@ -362,6 +366,9 @@ dependencies:
     supervisor.requestStop();
     expect(await runFuture.timeout(const Duration(seconds: 5)), 0);
     await logSink.close();
+    if (await logFile.exists()) {
+      await logFile.delete();
+    }
     await project.delete(recursive: true);
   }
 }
