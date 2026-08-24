@@ -47,7 +47,7 @@ jobs:
           coverage=$(awk -F: '/^LF:/{lines+=$2} /^LH:/{hit+=$2} END {print (hit/lines)*100}' coverage/lcov.info)
           echo "Line coverage: ${coverage}%"
           awk -v value="$coverage" 'BEGIN {exit(value < 75)}'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: coverage/lcov.info

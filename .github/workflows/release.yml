@@ -51,7 +51,7 @@ jobs:
         run: |
           $hash = (Get-FileHash ${{ matrix.output }} -Algorithm SHA256).Hash.ToLower()
           "$hash  ${{ matrix.output }}" | Out-File -Encoding ascii "${{ matrix.output }}.sha256"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
           path: |
@@ -75,7 +75,7 @@ jobs:
       - run: npm run check
       - run: npm run compile
       - run: npm run package
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: flutter-alive-vscode
           path: packages/flutter_alive_vscode/*.vsix
