@@ -28,7 +28,24 @@ These demos use a physical Samsung SM S721B and a real ADB transport reset.
 The console output and reconnect events are captured from actual Flutter runs,
 not simulated log sequences.
 
-### Use case 1: a normal `flutter run` exits
+> [!IMPORTANT]
+> **Demo legend**
+>
+> - 🔴 **BASELINE — not a Flutter Alive feature:** default `flutter run`
+>   behavior shown only to establish the problem.
+> - 🟢 **SUPPORTED — Flutter Alive CLI:** implemented behavior available in the
+>   current alpha and demonstrated on Android hardware.
+> - 🟡 **COMPARISON — not a separate feature:** a side-by-side summary of the
+>   baseline and supported workflow.
+
+### 🔴 Use case 1 — Baseline: a normal `flutter run` exits
+
+> **Scope:** ❌ This is not functionality provided by Flutter Alive. It shows
+> what happens when the same disconnect is handled by the standard Flutter CLI.
+
+| Runner after disconnect | Manual recovery | Observed tiny-demo relaunch |
+| --- | --- | --- |
+| ❌ **Exited** | ⌨️ **1 new `flutter run` per disconnect** | ⏱️ **6.4s and 15.8s** |
 
 When the device transport disappears, the regular Flutter runner prints
 `Lost connection to device.` and exits. The developer must notice the failure,
@@ -42,7 +59,14 @@ The tiny warm-cache demo produced observed relaunches of 6.4 and 15.8 seconds.
 Real applications can take substantially longer; these values are evidence
 from the demo environment, not universal Flutter benchmarks.
 
-### Use case 2: Flutter Alive keeps supervising
+### 🟢 Use case 2 — Supported: Flutter Alive keeps supervising
+
+> **Scope:** ✅ Implemented in the current Flutter Alive CLI alpha and verified
+> with the physical Android device shown in the demo.
+
+| Parent supervisor | Manual recovery commands | Recovery strategy | Post-recovery reload |
+| --- | --- | --- | --- |
+| ✅ **Same PID** | 🖐️ **0 commands** | 🔁 **Attach first, automatic relaunch fallback** | ⚡ **252ms in this captured run** |
 
 Flutter Alive keeps the same parent PID alive while the device is unavailable.
 When the phone returns, it tries to attach to the existing app and falls back
@@ -57,7 +81,22 @@ This captured run shows `running` -> `disconnected` -> `reattaching` ->
 `relaunching` -> `running`, followed by a successful hot reload while the
 supervisor PID remains unchanged.
 
-### Use case 3: compare the interruption
+Runtime-state preservation is best effort. The same supervisor lifecycle and
+recovery strategy are implemented for supported physical-device workflows,
+but the footage in this section is specifically Android hardware evidence.
+
+### 🟡 Use case 3 — Comparison: manual interruption vs supervision
+
+> **Scope:** ℹ️ This is a comparison summary, not another Flutter Alive feature.
+> The supported behavior is the green column; the red column is standard
+> Flutter CLI behavior without Flutter Alive.
+
+| Signal | 🔴 Normal `flutter run` | 🟢 Flutter Alive |
+| --- | --- | --- |
+| Parent process | ❌ **Exits** | ✅ **Stays alive** |
+| Manual recovery input | ⌨️ **1 command per disconnect** | 🖐️ **0 commands** |
+| Rebuild/reinstall duration | ⏱️ **Variable and blocking** | 🔁 **Variable, automatically supervised** |
+| Developer flow | 🛑 **Interrupted** | ▶️ **Supervisor keeps watching** |
 
 The wall-clock recovery time varies by project, cache, platform, and whether an
 existing VM Service can be reattached. The consistent difference is developer
