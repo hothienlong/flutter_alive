@@ -9,3 +9,8 @@ node_modules/
 packages/**/out/
 *.vsix
 .DS_Store
+/assets/demo/
+/tool/generate_promo_v2_assets.dart
+/tool/render_comparison.sh
+/tool/render_promo.sh
+/tool/render_promo_v2.sh

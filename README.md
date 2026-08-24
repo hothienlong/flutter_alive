@@ -22,6 +22,56 @@ Flutter Alive cannot make the Dart VM Service survive a device or application
 process termination. Reattaching and preserving runtime state is best effort;
 when that is impossible, the tool automatically launches the app again.
 
+## See It in Action
+
+These demos use a physical Samsung SM S721B and a real ADB transport reset.
+The console output and reconnect events are captured from actual Flutter runs,
+not simulated log sequences.
+
+### Use case 1: a normal `flutter run` exits
+
+When the device transport disappears, the regular Flutter runner prints
+`Lost connection to device.` and exits. The developer must notice the failure,
+run the command again, rebuild, reinstall, and restore their debugging flow.
+
+<p align="center">
+  <img src="assets/readme/baseline.gif" width="420" alt="Normal Flutter run exits after the Android device disconnects and requires a manual rebuild" />
+</p>
+
+The tiny warm-cache demo produced observed relaunches of 6.4 and 15.8 seconds.
+Real applications can take substantially longer; these values are evidence
+from the demo environment, not universal Flutter benchmarks.
+
+### Use case 2: Flutter Alive keeps supervising
+
+Flutter Alive keeps the same parent PID alive while the device is unavailable.
+When the phone returns, it tries to attach to the existing app and falls back
+to an automatic relaunch when attachment is not possible. No new
+`flutter run` command is required.
+
+<p align="center">
+  <img src="assets/readme/recovery.gif" width="420" alt="Flutter Alive survives a real Android transport reset and automatically restores the app" />
+</p>
+
+This captured run shows `running` -> `disconnected` -> `reattaching` ->
+`relaunching` -> `running`, followed by a successful hot reload while the
+supervisor PID remains unchanged.
+
+### Use case 3: compare the interruption
+
+The wall-clock recovery time varies by project, cache, platform, and whether an
+existing VM Service can be reattached. The consistent difference is developer
+interruption: a regular runner exits, while Flutter Alive remains available
+and performs recovery without another command.
+
+<p align="center">
+  <img src="assets/readme/comparison.gif" width="420" alt="Comparison of manual Flutter run recovery and automatic Flutter Alive recovery" />
+</p>
+
+See [demo measurement notes](doc/demo-measurements.md) and the latest
+[hardware validation record](doc/validation-2026-08-24.md) for environment,
+timing, and limitations.
+
 ## Quick Start
 
 ### Requirements

@@ -1,0 +1,16 @@
+.dart_tool/
+build/
+coverage/
+coverage2/
+dist/
+node_modules/
+packages/**/out/
+packages/flutter_alive_vscode/node_modules/
+*.vsix
+.DS_Store
+/assets/demo/
+/assets/readme/
+/tool/generate_promo_v2_assets.dart
+/tool/render_comparison.sh
+/tool/render_promo.sh
+/tool/render_promo_v2.sh
